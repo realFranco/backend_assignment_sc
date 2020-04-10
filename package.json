@@ -1,0 +1,26 @@
+{
+  "name": "backend_assignment_sc",
+  "version": "1.0.0",
+  "description": "Backend Assignment for Sport Compass.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/realFranco/backend_assignment_sc.git"
+  },
+  "keywords": [
+    "node",
+    "sql"
+  ],
+  "author": "Franco Gil",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/realFranco/backend_assignment_sc/issues"
+  },
+  "homepage": "https://github.com/realFranco/backend_assignment_sc#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}

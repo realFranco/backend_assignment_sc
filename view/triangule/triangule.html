@@ -1,0 +1,110 @@
+<html>
+    <head>
+        <title>Sport Compass | Triangule </title>
+
+        <link rel="shortcut icon" type="image/x-icon" href="/icons/sc.png">
+        <meta charset="utf-8"> 
+
+        <meta name="viewport" content="width=device-width, initial-scale=1"> 
+
+        <script src="/bootstrap-4.3.1-dist/js/jquery-3.4.1.min.js"></script>
+        
+        <link type="text/css" rel="stylesheet" href="/bootstrap-4.3.1-dist/css/bootstrap.min.css">
+        <link type="application/octet-stream" rel="stylesheet" href="/bootstrap-4.3.1-dist/css/bootstrap.min.css.map">
+        <script src="/bootstrap-4.3.1-dist/js/popper.min.js" ></script>
+        <script src="/bootstrap-4.3.1-dist/js/bootstrap.min.js"></script> 
+        <script type="application/octet-stream" src="/bootstrap-4.3.1-dist/js/bootstrap.min.js.map"></script> 
+    </head>
+
+    <style>
+    </style>
+
+    <body>
+
+        <!-- Start Navbar -->
+        <nav class="navbar navbar-light bg-light">
+            <a class="navbar-brand" href="/">
+                <img src="/icons/sc.png" class="d-inline-block align-top" alt="" style="width: 200px;">
+            </a>
+        </nav>
+        <!-- End Navbar -->
+
+        <br>
+        <br>
+
+        <div class="container d-flex justify-content-center">
+        
+            <div class="">
+
+                <form>
+                    <div class="form-row">
+                      <div class="col-4">
+                        <input id="input_a" type="text" class="form-control" placeholder="Side A">
+                      </div>
+                      <div class="col-4">
+                        <input id="input_b" type="text" class="form-control" placeholder="Side B">
+                      </div>
+                      <div class="col-4">
+                        <input id="input_c" type="text" class="form-control" placeholder="Side C">
+                      </div>
+                    </div>
+
+                    <br>
+
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-primary mb-2" onclick="send_sides()">
+                            Got Result
+                        </button>
+                        <span id="badge" class="badge badge-success" style="display: none;">Success</span>
+                      </div>
+                  </form>
+            </div>
+            
+        </div>
+
+        <footer class="page-footer font-small unique-color-dark pt-4">    
+            <div class="footer-copyright text-center py-3">
+                <img src="/icons/sc.png"  style="width: 150px;">
+                Backend Assignment - Intership Role © 2020
+            </div>
+        </footer>        
+
+    </body>
+
+    <script>
+        async function send_sides(){
+            let obj = {
+                "a": document.getElementById("input_a").value,
+                "b": document.getElementById("input_b").value,
+                "c": document.getElementById("input_c").value
+            }, route = "/triangule/tri_handler?";
+
+            Object.keys(obj).forEach( key => {
+                route += `${key}=${obj[key]}&`;
+            });
+
+            route = route.slice(0,-1);
+
+            console.log(route);
+
+            response_sign_t = await $.ajax({
+                type:   "GET",
+                url:    route
+            });
+
+            let _badge = document.getElementById("badge");
+
+            _badge.removeAttribute("style");
+
+            if( response_sign_t["triangule_type"] == "Incorrect"){
+                _badge.setAttribute("class", "badge badge-danger");
+                _badge.textContent = "Incorrect";
+            }else{
+                _badge.setAttribute("class", "badge badge-success");
+                _badge.textContent = response_sign_t["triangule_type"];
+            }
+        }
+
+
+    </script>
+</html>
