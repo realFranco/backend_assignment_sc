@@ -1,0 +1,96 @@
+<html>
+    <head>
+        <title>Sport Compass | Post </title>
+
+        <link rel="shortcut icon" type="image/x-icon" href="/icons/sc.png">
+        <meta charset="utf-8"> 
+
+        <meta name="viewport" content="width=device-width, initial-scale=1"> 
+
+        <script src="/bootstrap-4.3.1-dist/js/jquery-3.4.1.min.js"></script>
+        
+        <link type="text/css" rel="stylesheet" href="/bootstrap-4.3.1-dist/css/bootstrap.min.css">
+        <link type="application/octet-stream" rel="stylesheet" href="/bootstrap-4.3.1-dist/css/bootstrap.min.css.map">
+        <script src="/bootstrap-4.3.1-dist/js/popper.min.js" ></script>
+        <script src="/bootstrap-4.3.1-dist/js/bootstrap.min.js"></script> 
+        <script type="application/octet-stream" src="/bootstrap-4.3.1-dist/js/bootstrap.min.js.map"></script> 
+    </head>
+
+    <style>
+        #post_author{
+            text-align: right;
+        }
+    </style>
+
+    <body>
+
+        <!-- Start Navbar -->
+        <nav class="navbar navbar-light bg-light">
+            <a class="navbar-brand" href="/">
+                <img src="/icons/sc.png" class="d-inline-block align-top" alt="" style="width: 200px;">
+            </a>
+        </nav>
+        <!-- End Navbar -->
+
+        <br>
+        <br>
+
+        <div class="container">
+            <div class="d-flex justify-content-center">
+        
+                <div>
+                    <a href="/post/create">
+                        <button id="blog_create" type="button" class="btn btn-primary">New Post</button>
+                    </a>
+                    
+                </div>
+    
+            </div>
+
+            <br>
+
+            <div class="d-flex justify-content-center">
+            
+                <div id="set_of_blogs">
+
+                    <div class="card" style="width: 18rem;">
+                        <img src="..." class="card-img-top" alt="...">
+                        <div class="card-body">
+                          <h5 class="card-title">Blog 1</h5>
+                          <div id="post_author">
+                                <a href="/user"> 
+                                    <p>Aut: Franco</p> 
+                                </a>
+                          </div>
+                          <p class="card-text">Extract the first 100 characters to complete this set of lines on the card title and make up the bulk.</p>
+                          <a href="#" class="btn btn-primary">Watch more!</a>
+                        </div>
+                      </div>
+
+                </div>
+
+            </div>
+
+        </div>
+        
+
+            
+        
+
+        <footer class="page-footer font-small unique-color-dark pt-4">    
+            <div class="footer-copyright text-center py-3">
+                <img src="/icons/sc.png"  style="width: 150px;">
+                Backend Assignment - Intership Role © 2020
+            </div>
+        </footer>        
+
+    </body>
+
+    <script>
+        
+        function post_create_hander(){
+            console.log("button for create");
+        }
+
+    </script>
+</html>

@@ -1,0 +1,8 @@
+# Extension files to ignore
+.env
+
+# Prefix files names to ignore
+dev.*
+
+# Folder to ignore
+node_modules/
