@@ -5,6 +5,7 @@
  */
 
 const db = require('../db/index');
+const post_db = require('../db/post')
 const utils = require('../utils/utilities.js');
 const { v4: uuidv4 } = require('uuid'); 
 const path = require('path');
@@ -17,7 +18,7 @@ const bodyParser = require('body-parser');
 
 var access = express.Router();
 
-// configure multer
+// Configure multer
 // The disk storage, give full control on storing files to disk.
 var storage = multer.diskStorage({
         destination: function (req, file, cb) {
@@ -51,59 +52,65 @@ var upload = multer({
     storage: storage,
 }).single('cover_img');
 
-
 access.use(bodyParser.json());
 access.use(bodyParser.urlencoded({ extended: true }));
 
 // > post/ 
-// render all the post and show it
-access.get('/',  (req, res) =>{
-
-    console.log(`> Welcome to post!`);
-    // res.send('Hello Blog!');
+// Render partially all the post and show it
+access.get('/main',  (req, res) =>{
     res.sendFile('post.html', { root: path.join(__dirname, '../view/post/') });
 });
 
 // > post/create 
-// render the formularie to put data
+// Send a .html file as a resposne
 access.get('/create',  (req, res) =>{
-    console.log(`> Creating a post!`);
-    // res.send('Hello Blog!');
     res.sendFile('make_post.html', { root: path.join(__dirname, '../view/post/') });
-
 });
 
-// > post/scan [?limit=number]
-// show all the post on the db
-// adding a "limit" params the quantity of row to
-// send will be limited
-access.get('/scan', async (req, res) =>{
+// > post/my-title/view
+// Partial render view of a post
+access.get('/:title/view',  (req, res) =>{
+    res.sendFile('one_post.html', { root: path.join(__dirname, '../view/post/') });
+});
+
+// Show all the rows from table Post
+// If limit is passed, will limit the size of rows to show.
+// No exist order over the way of send the content
+// No exist pagginnation on the results, this is a 
+// complete scan of the tables from the project.
+access.get('/', async (req, res) =>{
     
     var _err = false
-    var limit = req.query.limit
-    var query = {}
-    var query_text = "SELECT * FROM Post"
+    var _t_query = {}, query = []
 
     try{
-        if (limit)
-            query_text = query_text + " LIMIT " + String(limit);
+        query_title = await db.query("SELECT title FROM Post");
+        for(let i = 0; i < query_title.rowCount; i++){
+            title = query_title.rows[i].title
 
-        query = await db.query(query_text)        
+            _t_query = await post_db.get_post_n_resources( db, title, false )
+
+            // Weird check to the object it is empty !!
+            if( Object.entries( _t_query ).length  )
+                query.push( _t_query )
+        }
+        if( query == [] )
+            throw new Error("no data returned")
+
     }catch(err){
         _err = err
     }
 
+    
     return res
         .status( !_err ? 200 : 400 )
         .send( !_err ? 
-            {"data": query.rows } :
+            {"data": query } :
             {"msg":  String(_err) } );
 });
 
-// > post/create_handler
-// endpoint to  create a post and persist data
-// https://attacomsian.com/blog/express-file-upload-multer#
-access.post('/create_handler', async (req, res) =>{
+// Create a post
+access.post('/', async (req, res) =>{
 
     var _id_user = null,
         _id_post = null,
@@ -116,7 +123,7 @@ access.post('/create_handler', async (req, res) =>{
         "user_name": req.query.user_name,
         "user_last_n": req.query.user_last_n,
         "date" : new Date(),
-        "user_role": req.query.user_role    // "public"
+        "user_role": "public"
     },
         blog_values = {
             "id_post" : _id_post,
@@ -150,7 +157,7 @@ access.post('/create_handler', async (req, res) =>{
                         Object.values(user_values))
                 
                 // The resource it is optional
-                if (file){
+                if ( file ){
                     blog_values["id_resource"] = _id_resource = uuidv4();
                     await client.query(
                         `INSERT INTO 
@@ -162,7 +169,8 @@ access.post('/create_handler', async (req, res) =>{
                 blog_values["id_post"] = uuidv4();
                 await client.query(
                             `INSERT INTO 
-                                Post(id_post, id_user, id_resource, title, text, created, avaliable)
+                                Post(id_post, id_user, id_resource, 
+                                    title, text, created, avaliable)
                                 VALUES ($1, $2, $3, $4, $5, $6, $7)`,
                                 Object.values(blog_values))
 
@@ -170,39 +178,34 @@ access.post('/create_handler', async (req, res) =>{
             }
             catch(err){
                 await client.query("ROLLBACK") // No land_space to rollback, only rollback
-                // File it is optional
-                if (file){
-                    dir = file.destination
-                    fs.unlinkSync(file.path)
-                    fs.rmdir(dir, (err) =>{
-                        if (err)
-                            console.log("Problem erasing: ", err)
-                    });
-                }
                 _err = err
+
+                // File it is optional
+                if (file)
+                    try{
+                        _del = utils.delete_file(file.path, file.destination)
+                    }catch(err){
+                        _err = err
+                    }
             }
         }
 
         return res
             .status( !_err ? 200 : 400 )
             .send( !_err ? 
-                {"msg": "content created"} :
-                {"msg":  String(_err) } );
+                {msg: "content created"} :
+                {msg:  String(_err) } );
     })
 });
 
-// > post/my-title
-// given a exact title return the post
+// Show a post using the title as parameter
 access.get('/:title', async (req, res) =>{
 
-    var _err = false;
-    var query = {}
-                
+    var _err = false,
+        query = {};
+    
     try{
-        query = await db.query(
-                `SELECT * 
-                FROM Post 
-                WHERE title = $1`, Object.values(req.params))
+        query = await post_db.get_post_n_resources( db, req.params.title, true )
     }catch(err){
         _err = err
     }
@@ -210,7 +213,7 @@ access.get('/:title', async (req, res) =>{
     return res
         .status( !_err ? 200 : 400 )
         .send( !_err ? 
-            {"data": query.rows[0] } :
+            {"data": query } :
             {"msg":  String(_err) } );
 
 });
@@ -218,7 +221,7 @@ access.get('/:title', async (req, res) =>{
 // > example post/my-title
 // edit the post content using params from the request and persits the changes
 // Only 4 elements can modified [title, text, avaliable, resource]
-access.post('/:title', async (req, res) =>{
+access.put('/:title', async (req, res) =>{
 
     var _err = false;
     var id_resource = null;
@@ -238,56 +241,57 @@ access.post('/:title', async (req, res) =>{
             try{
                 // Check if the title to edit already exist
                 query_res = await db.query(
-                        `SELECT title
-                        FROM Post
-                        WHERE title = $1`, [req.params.title])
+                        `SELECT p.title, rsc.route_name
+                        FROM Post p, Resource rsc
+                        WHERE p.title = $1 AND
+                            p.id_resource = rsc.id_resource`, [req.params.title])
                 
                 if ( query_res.rowCount == 0 )
                     throw new Error("post trying to edit do not exist")
-
-                // Check if the title to set already exist
-                query_res = await db.query(`SELECT title
-                            FROM Post
-                            WHERE title = $1`, [req.query.title])
                 
-                console.log("Edit: ", query_res.row)
-
-                if ( query_res.rowCount == 0 ){
+                if (file){
+                    id_resource = uuidv4();
+                    await db.query(
+                        `INSERT INTO 
+                            Resource(id_resource, route_name)
+                            VALUES ($1, $2)`, 
+                        [ id_resource, file.path.slice(6,)  ])
                     
-                    if (file){
-                        id_resource = uuidv4();
-                        await db.query(
-                            `INSERT INTO 
-                                Resource(id_resource, route_name)
-                                VALUES ($1, $2)`, 
-                            [ id_resource, file.path.slice(6,)  ])
-                        
-                        req.query  = Object.assign(req.query, {id_resource})
-                        console.log(req.query)
-                    }
-
-                    // Make use of my own ORM
-                    // req.query can contain variations, write a static query
-                    // will not be usefull in this case
-                    query_generated = db.gen_update_query(table_name, req.query, 
-                        req.params, false)
-
-                    query_res = await db.query(query_generated.query, query_generated.values)
-                }else{
-                    // Title not avaliable
-                    throw new Error("duplicate key title please set a distinct one")
+                    req.query  = Object.assign(req.query, {id_resource})
                 }
+
+                // Make use of my own ORM
+                // req.query can contain variations, write a static query
+                // will not be usefull in this case
+                query_generated = db.gen_update_query(table_name, req.query, 
+                    req.params, false)
+
+                await db.query(query_generated.query, 
+                    query_generated.values)
+
+                
+                try{
+                    // Delete the actual image from the disc
+                    temp_path = './public'+ query_res.rows[0].route_name
+                    temp_dir = temp_path.split("/")
+                    temp_dir.pop()
+                    temp_dir = temp_dir.join("/")
+    
+                    utils.delete_file(temp_path.slice(2,), temp_dir)
+                }catch(err){
+                    throw err
+                }
+                
             }catch(err){
                 _err = err
 
-                if (file){
-                    dir = file.destination
-                    fs.unlinkSync(file.path)
-                    fs.rmdir(dir, (err) =>{
-                        if (err)
-                            console.log("Problem erasing: ", err)
-                    });
-                }
+                if (file)
+                    // Error during the insertion, delete the resource
+                    try{
+                        utils.delete_file(file.path, file.destination)
+                    }catch(err){
+                        _err = err
+                    }
             }
         }
 
@@ -300,72 +304,38 @@ access.post('/:title', async (req, res) =>{
 });
 
 // > post/
-// para [id_post] given a post id, delete the post and
-// the post components, points and comments
+// delete all
 access.delete('/', async (req, res) =>{
-    var _err = false
-    var id_post = req.query.id_post
-    var query = {}, file = [], temp_path = "", temp_dir ="";
+    var _err = false, query = {}
 
     try{
-        // Query the resource & user associated with the post
-        query = await db.query(
-            `SELECT id_resource, id_user 
-            FROM Post 
-            WHERE id_post = $1`, [ id_post ])
-
-        if ( await query.rowCount == 0 )
-            throw new Error("post do not exist")
+        query = await db.query(`SELECT title FROM Post`)
         
-        // Check the route of the file to delete
-        file = await db.query(
-            `SELECT route_name FROM Resource
-            WHERE id_resource = $1`, [ query.rows[0].id_resource ])
-        
-        // Delete the post before the resource and the user.
-        await db.query(`
-            DELETE FROM Post
-            WHERE id_post = $1`, [ id_post ])
-    
-        // Deleting comments from Post (all of it)
-        await db.query(
-            `DELETE FROM Commentary 
-            WHERE id_post = $1`, [ id_post ])
-
-       
-        if ( await query.rowCount == 1 ){
-            // Exist a user and (sometimes) a resource, then delete it
-            await query.rows.forEach( async row => {
-                if( row.id_resource )
-                    await db.query(
-                        `DELETE FROM Resource 
-                        WHERE id_resource = $1`, [ row.id_resource ])
-                
-                // Delete a set of commentary created by the user.
-                // If this not happend,  
-                // violates foreign key constraint "add_commentary"
-                await db.query(
-                    `DELETE FROM Commentary 
-                    WHERE id_user = $1`, [ row.id_user ])  // add OR id_post = $2
-
-                await db.query(
-                    `DELETE FROM "User"
-                    WHERE id_user = $1`, [ row.id_user ])
-            });
+        for(let i = 0; i < query.rowCount; i++){
+            row = query.rows[i]
+            await post_db.delete_post( db, row.title )
         }
+    }catch(err){
+        _err = err
+    }
+    
+    return res
+        .status( !_err ? 200 : 400 )
+        .send( !_err ? 
+            {"msg": "Post table it is now empty" } :
+            {"msg":  String(_err) } );
+});
 
-        // Delete the image and the folder, only if all the queries
-        // will be ended without problems
-        temp_path = './public'+ file.rows[0].route_name
-        temp_dir = temp_path.split("/")
-        temp_dir.pop()
-        temp_dir = temp_dir.join("/")
+// > post/my-post
+// para [id_post] given a post id, delete the post and
+// the post components, points and comments
+access.delete('/:title', async (req, res) =>{
+    var _err = false
+    var title = decodeURI(req.params.title)
 
-        fs.unlinkSync(temp_path.slice(2,))
-        fs.rmdir(temp_dir, (err) =>{
-            if (err)
-                console.log("Problem erasing: ", err)
-        });
+    try{
+        // Handler to delete the post correctly from the DB
+        await post_db.delete_post( db, title )
     }catch(err){
         _err = err
     }

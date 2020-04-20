@@ -14,23 +14,6 @@ for the assignment.
 
 For document artifacts, the UML-ERD was created
 under "Visual Paradigm 16.1".
-
----
-Instructions: [ Execute 3 instructions ]
-
-Open postgres at the current username and create the database:
->  psql -d postgres -U "$whoami"
-
--- Write the exact name
-> CREATE DATABASE sc_p0st_n_c0ments; 
-
-To create the set of tables, write
-this into a shell at the root of the project:
-> node -p "require('./db/index.js').create_tables()"
-
-Or go to the file
-> db/index.js
-and watch the functon "create_tables"
 */
 
 CREATE TABLE Commentary (

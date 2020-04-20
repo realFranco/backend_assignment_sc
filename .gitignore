@@ -4,5 +4,6 @@
 # Prefix files names to ignore
 dev.*
 
-# Folder to ignore
+# Folders to ignore
 node_modules/
+public/img_cover/

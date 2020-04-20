@@ -36,21 +36,35 @@
         <br>
 
         <div class="container">
+            <div id="set_of_blogs" class="row d-flex justify-content-center">
+            </div>
+
+
             <div class="d-flex justify-content-center">
-                <div>
-                    <a href="/post/create">
-                        <button id="blog_create" type="button" class="btn btn-primary">New Post</button>
-                    </a>
-                </div>
+                <p>Leave a commentary</p>
             </div>
 
-            <br>
+            <div class="d-flex justify-content-center">
+                
+                <form>
+                    <div class="form-group">
+                        <label for="user_name">Name</label>
+                        <input id="user_name" type="text" class="form-control" 
+                            placeholder="Jhon" required>
+                    </div>
 
-            <div id="set_of_blogs" class="row">
+                    <div class="form-group">
+                        <label for="comm_text">Commentary</label>
+                        <textarea class="form-control" id="comm_text" rows="3" placeholder="Commentary"></textarea>
+                        
+                    </div>
+                    <button type="button" class="btn btn-success" onclick="send_commentary()">
+                        Send commentary
+                    </button>
+                  </form>
             </div>
-
         </div>
-    
+        
         <footer class="page-footer font-small unique-color-dark pt-4">    
             <div class="footer-copyright text-center py-3">
                 <img src="/icons/sc.png"  style="width: 150px;">
@@ -62,6 +76,6 @@
 
     <script src="/scripts/static_handler.js"></script> 
     <script>
-        start()
+        start_unique()
     </script>
 </html>

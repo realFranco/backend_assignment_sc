@@ -11,7 +11,7 @@
         
         <link type="text/css" rel="stylesheet" href="/bootstrap-4.3.1-dist/css/bootstrap.min.css">
         <link type="application/octet-stream" rel="stylesheet" href="/bootstrap-4.3.1-dist/css/bootstrap.min.css.map">
-        <script src="/bootstrap-4.3.1-dist/js/popper.min.js" ></script>
+        <script src="/popper/popper.min.js" ></script>
         <script src="/bootstrap-4.3.1-dist/js/bootstrap.min.js"></script> 
         <script type="application/octet-stream" src="/bootstrap-4.3.1-dist/js/bootstrap.min.js.map"></script> 
     </head>
@@ -38,19 +38,11 @@
         <div class="container">
 
             <div class="d-flex justify-content-center">
-                <div>
-                    <span class="badge badge-info">Creating a new post</span>
-                </div>
-                <div>
-                    <span class="badge badge-success">
-                        Post Created - Click to look.
-                    </span>
-                </div>    
+                <h3>Create a Post</h3>
             </div>
             
-        
             <div class="d-flex justify-content-center">
-        
+                
                 <form>
                     <div class="form-group">
 
@@ -59,7 +51,6 @@
                             <input type="text" class="form-control" 
                                 id="user_name" placeholder="Jhon" required>
                         </div>
-                    
                     </div>
 
                     <div class="form-group">
@@ -82,32 +73,20 @@
                     <div class="file_upload fileupload-css-ak">
                         <label for="resources">Please upload your image(s).</label>
                         <div class="input-group mb-3">
-                            <input id="resources" type="file" name="attachments[]"  required="required" multiple="multiple" onchange="upload_check()">
+                            <input id="resources" type="file" name="attachments[]"  required="required" multiple="multiple">
                         </div>
                     </div>
-
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                        <label class="form-check-label" for="defaultCheck1">
-                            Public content
-                        </label>
-                      </div>
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-dismiss="modal" >
                             Cancel
                         </button>
-                        <button id="button_form_submit" type="button" class="btn btn-success" onclick="create_post()">
+                        <button id="button_form_submit" type="button" class="btn btn-success" onclick="post_create_handler()">
                             Save changes
                         </button>
                     </div>
-
-                    
-
                 </form>
-    
             </div>
-
         </div>
         
 
@@ -120,11 +99,6 @@
 
     </body>
 
-    <script>
-        
-        function post_create_hander(){
-            console.log("button for create");
-        }
+    <script src="/scripts/static_handler.js"></script> 
 
-    </script>
 </html>

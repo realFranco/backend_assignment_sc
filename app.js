@@ -7,6 +7,8 @@
  * Entry point for the backend assignment.
  */
 
+const dotenv = require('dotenv');
+const dotenvExpand = require('dotenv-expand');
 const path = require('path');
 const express = require('express');
 
@@ -15,8 +17,12 @@ const post = require('./routes/post');
 const commentary = require('./routes/commentary');
 
 
+var myEnv = dotenv.config();
+dotenvExpand(myEnv);
+
 const app = express();
-var port = 7000;
+const host = process.env.APP_URL;
+const port = process.env.APP_PORT;
 
 // Declaring the set of routes to use
 app.use('/triangule', triangule);
@@ -26,15 +32,13 @@ app.use('/commentary', commentary);
 // Set the public folder, to serve resources
 app.use( express.static('./public') )
 
-// Render the welcome page - app selector [triangule, post CRUD]
+// Send the .html view
 app.get('/',  (req, res) => {
-    console.log(`> Welcome to the main.`);
-
     res.sendFile('main.html', { root: path.join(__dirname, './view/main/') });
 }); 
 
 app.listen(port, () => {
-    console.log(`Backend Assignment: Sport Compass at -> http://localhost:${port}`);
+    console.log(`Backend Assignment: Sport Compass at -> ${host}`);
 });
 
 module.exports = app;

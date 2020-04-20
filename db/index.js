@@ -2,7 +2,7 @@
  * Data access code 
  * CRUD <=> postgreSQL 
  *
- * Instructions:
+ * Instructions to manage the database:
  * 
  * Connect To postgres using the current username
  * > psql -d postgres -U "$whoami"
@@ -10,13 +10,14 @@
  * Create the db sc_p0st_n_c0ments database:
  * > CREATE DATABASE sc_p0st_n_c0ments;
  * 
- * To create the set of tables:
+ * After the DB creation, turn on the set of tables:
  * > node -p "require('./db/index.js').create_tables()"
  * 
- * * To drop the set of tables:
+ * To drop the set of tables, before drop the DB:
  * > node -p "require('./db/index.js').drop_tables()"
  * 
- * Drop the db sc_p0st_n_c0ments database:
+ * Drop the DB:
+ * > psql -d postgres -U "$whoami"
  * > DROP DATABASE sc_p0st_n_c0ments;
  */
 
@@ -41,29 +42,26 @@ function get_pool(){
     return pool
 }
 
-function create_tables(){
-    // > node -p "require('./db/index.js').create_tables()"
-
+// > node -p "require('./db/index.js').create_tables()"
+async function create_tables(){
     var queryText = fs.readFileSync("./db/create_db.sql").toString();
 
     // No errors reported during database creation.
-    pool.query(queryText, (error, res) => {
+    await pool.query(queryText, (error, res) => {
         if (error)
             throw error;
         else
             console.log("Tables created.");
     });
     
-    pool.end();    
+    await pool.end();    
 }
 
-
-function drop_tables(){
-    // > node -p "require('./db/index.js').drop_tables()"
-
+// > node -p "require('./db/index.js').drop_tables()"
+async function drop_tables(){
     var queryText = fs.readFileSync("./db/drop_db.sql").toString();
     
-    pool.query(queryText, (error, res) =>{
+    await pool.query(queryText, (error, res) =>{
         if( error){
             _continue = false;
             throw error;
@@ -71,8 +69,8 @@ function drop_tables(){
         else
             console.log("Tables droped.");
     });
-    
-    pool.end();
+
+    await pool.end();
 }
 
 /**
@@ -91,10 +89,6 @@ async function query(text, values){
     }
     
     return rslt
-}
-
-function listen_index(){
-    console.log("db/index.js imported");
 }
 
 /**
@@ -167,7 +161,6 @@ module.exports = {
     create_tables,
     drop_tables,
     query,
-    listen_index,
     get_pool,
     gen_update_query
 };

@@ -90,6 +90,28 @@ function randomValueHex(len) {
       .slice(0, len) // return required number of characters
 }
 
+/**
+ * Delete the file from a folder and then, the folder.
+ * 
+ * @param {String} folder Relative route of the folder to delete.
+ * @param {String} file Relative route of the file.
+ */
+function delete_file(folder, file){
+    let fs = require('fs')
+
+    try{
+        fs.unlinkSync(folder)
+        fs.rmdir(file, err =>{
+            if (err)
+                throw err
+        });
+        
+    }catch(err){
+        throw err
+    }
+    
+    return true
+}
 
 // Exporting the function to become imported outside
 module.exports = {
@@ -97,5 +119,6 @@ module.exports = {
     meta_triangule,
     callback,
     check_img_extension,
-    randomValueHex
+    randomValueHex,
+    delete_file
 };
