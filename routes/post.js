@@ -260,7 +260,7 @@ access.put('/:title', async (req, res) =>{
                     req.query  = Object.assign(req.query, {id_resource})
                 }
 
-                // Make use of my own ORM
+                // Make use of my own tinny query builder
                 // req.query can contain variations, write a static query
                 // will not be usefull in this case
                 query_generated = db.gen_update_query(table_name, req.query, 

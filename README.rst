@@ -140,5 +140,7 @@ Notes from the developer.
  - Remember to quit the typing "q" or "Ctrl+C" when the test are finish.
  
  - The unit testings was not doing from all the project, some functions and endpoints was not tested using Jest.
+
+ - No orm or query builder was used, only raw queries on SQL to change data through the API.
  
  - Enjoy it!
