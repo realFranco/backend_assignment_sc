@@ -87,7 +87,7 @@ Endpoint Documentation.
 
 The set of endpoints that cover the *Blog API* was used principally at Postman, the link bellow will show every endpoint with an entire description.
 
- - `Sport Compass Blog - Public <https://documenter.getpostman.com/view/6474278/Szf3bB9J?version=latest>`__
+ - `Sport Compass Blog - Public <https://documenter.getpostman.com/view/6474278/SzmZdLMZ?version=latest>`__
 
 ====================================
 Database Documentation.
