@@ -73,13 +73,54 @@ Steps to turn on the service.
       DB_CONN_DEV=postgresql://${DB_HOST}:${DB_PORT}/${DB_DATABASE}
 
  
-3. You can now run the service:
+4. You can now run the service:
 
 .. code-block:: console
 
   $: node app
 
-4. This service has *user interface*, so maybe you can go through the url displayed at the message exported after the command execution.
+5. This service has *user interface*, so maybe you can go through the url displayed at the message exported after the command execution.
+
+6. Run the project in localhost using Docker
+
+```bash
+# Clone the project.
+git clone x
+
+# Copy and fill up the environment variables.
+cp .docker/.env.dist .docker/.env
+
+docker compose -f .docker/compose.yaml build
+
+docker compose -f .docker/compose.yaml up
+
+docker compose -f .docker/compose.yaml down
+
+# Ref: https://docs.docker.com/engine/reference/commandline/compose_up/.
+# Starts the containers in the background and leaves them running.
+docker compose -f .docker/compose.yaml up --detach
+
+# Or, run the `db` service only.
+docker compose -f .docker/compose.yaml up db --detach
+
+# Check if postgres service is live.
+
+# Instance a `bash` session into the `cli` service.
+docker compose -f .docker/compose.yaml run --rm cli bash
+
+# Previously, install `postgres` in order to check if is ready for accepting connections.
+pg_isready --host=$POSTGRES_HOST --username=$POSTGRES_USER --port=$POSTGRES_PORT
+> host:5432 - accepting connections
+
+# Connect into the db from the `cli` container
+psql -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB
+
+# Install the Node dependencies.
+npm install
+
+# Run the application.
+node app
+```
 
 ====================================
 Endpoint Documentation.
