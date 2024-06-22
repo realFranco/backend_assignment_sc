@@ -81,46 +81,47 @@ Steps to turn on the service.
 
 5. This service has *user interface*, so maybe you can go through the url displayed at the message exported after the command execution.
 
-6. Run the project in localhost using Docker
+6. Run the project in localhost using Docker.
 
-```bash
-# Clone the project.
-git clone x
+.. code-block:: console
 
-# Copy and fill up the environment variables.
-cp .docker/.env.dist .docker/.env
+  # Clone the project.
+  git clone x
 
-docker compose -f .docker/compose.yaml build
+  # Copy and fill up the environment variables.
+  cp .docker/.env.dist .docker/.env
 
-docker compose -f .docker/compose.yaml up
+  docker compose -f .docker/compose.yaml build
 
-docker compose -f .docker/compose.yaml down
+  docker compose -f .docker/compose.yaml up
 
-# Ref: https://docs.docker.com/engine/reference/commandline/compose_up/.
-# Starts the containers in the background and leaves them running.
-docker compose -f .docker/compose.yaml up --detach
+  docker compose -f .docker/compose.yaml down
 
-# Or, run the `db` service only.
-docker compose -f .docker/compose.yaml up db --detach
+  # Ref: https://docs.docker.com/engine/reference/commandline/compose_up/.
+  # Starts the containers in the background and leaves them running.
+  docker compose -f .docker/compose.yaml up --detach
 
-# Check if postgres service is live.
+  # Or, run the `db` service only.
+  docker compose -f .docker/compose.yaml up db --detach
 
-# Instance a `bash` session into the `cli` service.
-docker compose -f .docker/compose.yaml run --rm cli bash
+  # Check if postgres service is live.
 
-# Previously, install `postgres` in order to check if is ready for accepting connections.
-pg_isready --host=$POSTGRES_HOST --username=$POSTGRES_USER --port=$POSTGRES_PORT
-> host:5432 - accepting connections
+  # Instance a `bash` session into the `cli` service.
+  docker compose -f .docker/compose.yaml run --rm cli bash
 
-# Connect into the db from the `cli` container
-psql -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB
+  # Previously, install `postgres` in order to check if is ready for accepting connections.
+  pg_isready --host=$POSTGRES_HOST --username=$POSTGRES_USER --port=$POSTGRES_PORT
+  > host:5432 - accepting connections
 
-# Install the Node dependencies.
-npm install
+  # Connect into the db from the `cli` container
+  psql -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB
 
-# Run the application.
-node app
-```
+  # Install the Node dependencies.
+  npm install
+
+  # Run the application.
+  node app
+
 
 ====================================
 Endpoint Documentation.
