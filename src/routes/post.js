@@ -5,7 +5,7 @@
  */
 
 const db = require('../db/index');
-const post_db = require('../db/post')
+const post_db = require('../db/post.js')
 const utils = require('../utils/utilities.js');
 const { v4: uuidv4 } = require('uuid'); 
 const path = require('path');
@@ -22,16 +22,17 @@ var access = express.Router();
 // The disk storage, give full control on storing files to disk.
 var storage = multer.diskStorage({
         destination: function (req, file, cb) {
-            let route = "./public/img_cover/", go = false
-            let r_folder = ""
+            let go = false;
+            let route = "./src/public/img_cover/";
+            let directoryName = "";
 
-            // Create folder, the while avoid the match of folders
             while( !go ){
-                r_folder = utils.randomValueHex(8)
-                if ( !fs.existsSync(route + r_folder) ){
-                    go = true // break the while
-                    fs.mkdirSync(route + r_folder)
-                    cb(null, route + r_folder)
+                // Create folder, the while avoid the match of folders
+                directoryName = utils.randomValueHex(8)
+                go = true // break the while
+                if ( !fs.existsSync(route + directoryName) ){
+                    fs.mkdirSync(route + directoryName)
+                    cb(null, route + directoryName)
                 }
             }
         },
@@ -52,8 +53,8 @@ var upload = multer({
     storage: storage,
 }).single('cover_img');
 
-access.use(bodyParser.json());
-access.use(bodyParser.urlencoded({ extended: true }));
+access.use(bodyParser.json({ extended: true, limit: '64mb' }));
+access.use(bodyParser.urlencoded({ extended: true, limit: '64mb' }));
 
 // > post/ 
 // Render partially all the post and show it
@@ -272,7 +273,7 @@ access.put('/:title', async (req, res) =>{
                 
                 try{
                     // Delete the actual image from the disc
-                    temp_path = './public'+ query_res.rows[0].route_name
+                    temp_path = './src/public'+ query_res.rows[0].route_name
                     temp_dir = temp_path.split("/")
                     temp_dir.pop()
                     temp_dir = temp_dir.join("/")

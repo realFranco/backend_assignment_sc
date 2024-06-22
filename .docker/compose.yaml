@@ -1,0 +1,67 @@
+services:
+  cli:
+    build:
+      context: ./../.
+      dockerfile: ./.docker/cli/Dockerfile
+    volumes:
+      - ./../src:/app
+    networks:
+      - backend-sport-compass
+    working_dir: /app
+    env_file:
+      - .env
+    
+  db:
+    image: postgres:16.3-alpine3.20
+    container_name: ${POSTGRES_HOST}
+    user: postgres
+    env_file:
+      - ./.env
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+      - ./db-postgres:/docker-entrypoint-initdb.d/
+    networks:
+      - backend-sport-compass
+    ports:
+      - 5432:5432
+
+  api-rest:
+    container_name: ${API_REST_CONTAINER_NAME}
+    build:
+      context: ./../.
+      dockerfile: ./.docker/api-rest/Dockerfile
+    volumes:
+      - ./../:/app
+    ports:
+      - 7001:7000
+    networks:
+      - backend-sport-compass
+    working_dir: /app
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+
+  http:
+    image: nginx:1.27.0
+    volumes:
+      - ./http/nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 7005:80
+    networks:
+      - backend-sport-compass
+    depends_on:
+      - cli
+      - db
+      - api-rest
+
+networks:
+  backend-sport-compass:
+    driver: bridge
