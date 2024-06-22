@@ -1,0 +1,4 @@
+# Assets from the `.docker/` bridge to be ignored.
+
+/.env
+/postgres/

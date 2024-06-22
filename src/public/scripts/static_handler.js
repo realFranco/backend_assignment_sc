@@ -71,7 +71,9 @@ async function post_create_handler(){
         "timeout": 0,
         "processData": false,
         "mimeType": "multipart/form-data",
-        "contentType": false
+        // "contentType": false
+        "type": "json"
+
     };
 
     file = file_handler()
@@ -81,6 +83,10 @@ async function post_create_handler(){
         settings["data"] = form;
     }
 
+    console.log('settings: ');
+    console.log(settings);
+
+    // await $...
     await $.ajax(settings).done(function (response) {
         console.log(response);
     });

@@ -6,4 +6,4 @@ dev.*
 
 # Folders to ignore
 node_modules/
-public/img_cover/
+src/public/img_cover/
